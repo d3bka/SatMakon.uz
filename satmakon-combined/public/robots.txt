@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sat-makon.uz/sitemap.xml

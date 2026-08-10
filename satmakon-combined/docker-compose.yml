@@ -1,0 +1,55 @@
+# Production compose for the VPS (/opt/sat-makon/site/).
+# Pulls pre-built images from Docker Hub; nothing is built here.
+#
+# Both containers are INTERNAL ONLY — no host ports. The edge nginx of the
+# makonbook stack (makonbook-nginx) owns :80/:443, terminates TLS for
+# sat-makon.uz with the existing certbot cert, and proxies to
+# http://sat-makon-site:80. That edge config needs no changes: the site
+# container keeps the same name and port as the old static-only deploy.
+#
+#   sat-makon-site  nginx, serves public/ and proxies /api/ -> sat-makon-bot:8000
+#   sat-makon-bot   python bot.py: Telegram polling + uvicorn lead API on :8000
+
+services:
+  site:
+    image: ${SITE_IMAGE:-nazacd/sat-makon-site:latest}
+    pull_policy: always
+    restart: always
+    container_name: sat-makon-site
+    # Start ordering only. What actually keeps the site up while the bot is down
+    # is the variable upstream in site.conf, which resolves lazily.
+    depends_on:
+      - bot
+    networks:
+      - sat_makon_network
+    expose:
+      - "80"
+    healthcheck:
+      # 127.0.0.1, not localhost: localhost resolves to ::1 first and nginx listens on IPv4 only.
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  bot:
+    image: ${BOT_IMAGE:-nazacd/sat-makon-bot:latest}
+    pull_policy: always
+    restart: always
+    container_name: sat-makon-bot
+    env_file: .env
+    networks:
+      - sat_makon_network
+    expose:
+      - "8000"
+    volumes:
+      # Bot state: memory.json / phones.json / notified.json
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  sat_makon_network:
+    external: true

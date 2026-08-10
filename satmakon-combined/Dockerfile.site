@@ -1,0 +1,8 @@
+FROM nginx:1.27-alpine
+
+COPY site.conf /etc/nginx/conf.d/default.conf
+
+# public/ holds the whole website; v2 and v3 are dropped by .dockerignore.
+COPY public/ /usr/share/nginx/html/
+
+EXPOSE 80

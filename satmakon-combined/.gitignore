@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+bot.log
+bot_fresh.log
+bot_err.log
+nohup.out
+memory.json
+phones.json
+notified.json
+data/*.json
+.venv/
+.idea/

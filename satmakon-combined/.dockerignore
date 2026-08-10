@@ -1,0 +1,25 @@
+.git
+.gitignore
+.claude
+.idea
+.venv
+__pycache__
+*.pyc
+
+# Real secrets live here — never bake them into an image.
+.env
+
+# Bot state: bind-mounted at runtime.
+data
+
+# Superseded copies of the site.
+public/v2
+public/v3
+
+*.md
+Procfile
+runtime.txt
+test_group.py
+Dockerfile*
+.dockerignore
+docker-compose.yml
