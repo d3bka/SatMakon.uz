@@ -42,7 +42,7 @@ services:
     expose:
       - "8000"
     volumes:
-      # Bot state: memory.json / phones.json / notified.json
+      # Bot state: memory.json / phones.json / notified.json / sessions.json
       - ./data:/app/data
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/health')"]
