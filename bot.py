@@ -5,6 +5,7 @@ import asyncio
 import logging
 import threading
 from collections import defaultdict, deque
+from difflib import SequenceMatcher
 from datetime import date, timedelta
 from pathlib import Path
 from time import monotonic
@@ -53,6 +54,8 @@ STATE_IDLE = "idle"
 STATE_WAITING_CITY = "waiting_city"
 STATE_WAITING_BRANCH = "waiting_branch"
 STATE_WAITING_PHONE = "waiting_phone"
+STATE_CONFIRM_CITY = "confirm_city"
+STATE_CONFIRM_BRANCH = "confirm_branch"
 
 LANG_UZ = "uz"
 LANG_UZ_CYR = "uz_cyr"
@@ -67,6 +70,77 @@ BRANCHES = {
     "navoi": "https://maps.app.goo.gl/F6LmXdmfCEARyRbg9",
 }
 
+CITY_ALIASES = {
+    "tashkent": {
+        "label": "Toshkent",
+        "aliases": ["toshkent", "tashkent", "ташкент", "тошкент"],
+    },
+    "bukhara": {
+        "label": "Buxoro",
+        "aliases": ["buxoro", "bukhara", "buhoro", "бухоро", "бухара"],
+    },
+    "gulistan": {
+        "label": "Guliston",
+        "aliases": ["guliston", "gulistan", "sirdaryo", "гулистон", "гулистан", "сирдарё", "сирдарья"],
+    },
+    "navoi": {
+        "label": "Navoiy",
+        "aliases": ["navoiy", "navoi", "навоий", "навои"],
+    },
+    "other": {
+        "label": "Samarqand",
+        "aliases": [
+            "samarqand", "samarkand", "самарканд",
+            "fargona", "fergana", "фергана",
+            "andijon", "andijan", "андижан",
+            "namangan", "наманган",
+            "qarshi", "karshi", "карши",
+            "qashqadaryo", "кашқадарё", "кашкадарья",
+            "surxondaryo", "сурхондарё", "сурхандарья",
+            "termiz", "termez", "термез",
+            "xorazm", "khorezm", "хорезм",
+            "urgench", "urganch", "ургенч",
+            "jizzax", "djizzakh", "джизак",
+            "nukus", "нукус",
+            "kokand", "qoqon", "коканд",
+        ],
+    },
+}
+
+BRANCH_ALIASES = {
+    "novza": {
+        "label": "Novza",
+        "aliases": ["novza", "новза"],
+    },
+    "minor": {
+        "label": "Minor",
+        "aliases": ["minor", "минор"],
+    },
+}
+
+COURSE_ALIASES = {
+    "foundation": {
+        "label": "Foundation",
+        "aliases": ["foundation", "faundation", "foundatoin", "foundtion", "фаундейшн", "фаундэйшн"],
+    },
+    "pre_sat": {
+        "label": "Pre-SAT",
+        "aliases": ["pre sat", "pre-sat", "presat", "pre_sat", "пре сат", "пре-сат"],
+    },
+    "sat": {
+        "label": "SAT",
+        "aliases": ["sat", "сат"],
+    },
+    "ap_calculus": {
+        "label": "AP Calculus",
+        "aliases": ["ap calculus", "ap calc", "apcalculus", "ап калькулус", "ап calculus"],
+    },
+}
+
+FUZZY_AUTO_THRESHOLD = 0.86
+FUZZY_CONFIRM_THRESHOLD = 0.64
+FUZZY_MIN_TOKEN_LEN = 4
+
 PHONE = "+998 95 191 16 00"
 ADMIN_USERNAME = "@satmakon_novzaa"
 
@@ -74,7 +148,11 @@ TEXTS = {
     LANG_UZ: {
         "greeting": "Assalomu alaykum. SATMakon o'quv markazining virtual konsultanti Ziyodaman. Labbay?",
         "ask_city": "Albatta, qaysi shaharda yashaysiz?",
+        "city_retry": "Shahar nomini biroz to'liqroq yozib yuboring 😊 Masalan: Toshkent, Samarqand, Buxoro.",
+        "confirm_city": "{city}ni nazarda tutdingizmi? 😊 Ha yoki yo'q deb yozing.",
         "ask_branch": "Toshkentda 2 ta filialimiz bor: Novza va Minor. Qaysi biri sizga qulay?",
+        "branch_retry": "Filial nomini biroz aniqroq yozing 😊 Novza yoki Minor.",
+        "confirm_branch": "{branch} filialini nazarda tutdingizmi? 😊 Ha yoki yo'q deb yozing.",
         "ask_phone": "Telefon raqamingizni qoldirsangiz, administrator siz bilan bog'lanadi.",
         "phone_retry": "Telefon raqamini +998 XX XXX XX XX formatida yuboring yoki Telegram kontaktini ulashing.",
         "phone_done": "Rahmat, raqamingiz qabul qilindi. Kutib qolamiz! 😊",
@@ -91,7 +169,11 @@ TEXTS = {
     LANG_UZ_CYR: {
         "greeting": "Ассалому алайкум. SATMakon ўқув марказининг виртуал консультанти Зиёдаман. Лаббай?",
         "ask_city": "Албатта, қайси шаҳарда яшайсиз?",
+        "city_retry": "Шаҳар номини бироз тўлиқроқ ёзиб юборинг 😊 Масалан: Тошкент, Самарқанд, Бухоро.",
+        "confirm_city": "{city}ни назарда тутдингизми? 😊 Ҳа ёки йўқ деб ёзинг.",
         "ask_branch": "Тошкентда 2 та филиалимиз бор: Novza ва Minor. Қайси бири сизга қулай?",
+        "branch_retry": "Филиал номини бироз аниқроқ ёзинг 😊 Novza ёки Minor.",
+        "confirm_branch": "{branch} филиалини назарда тутдингизми? 😊 Ҳа ёки йўқ деб ёзинг.",
         "ask_phone": "Телефон рақамингизни қолдирсангиз, администратор сиз билан боғланади.",
         "phone_retry": "Телефон рақамини +998 XX XXX XX XX форматида юборинг ёки Telegram контактини улашинг.",
         "phone_done": "Раҳмат, рақамингиз қабул қилинди. Кутиб қоламиз! 😊",
@@ -108,7 +190,11 @@ TEXTS = {
     LANG_RU: {
         "greeting": "Здравствуйте. Я Зиёда, виртуальный консультант учебного центра SATMakon. Чем могу помочь?",
         "ask_city": "Конечно. В каком городе вы живёте?",
+        "city_retry": "Напишите название города чуть полнее 😊 Например: Ташкент, Самарканд, Бухара.",
+        "confirm_city": "Вы имели в виду {city}? 😊 Ответьте да или нет.",
         "ask_branch": "В Ташкенте у нас 2 филиала: Novza и Minor. Какой вам удобнее?",
+        "branch_retry": "Напишите филиал чуть точнее 😊 Novza или Minor.",
+        "confirm_branch": "Вы имели в виду филиал {branch}? 😊 Ответьте да или нет.",
         "ask_phone": "Оставьте номер телефона, и администратор свяжется с вами.",
         "phone_retry": "Отправьте номер в формате +998 XX XXX XX XX или поделитесь контактом Telegram.",
         "phone_done": "Спасибо, номер получен. Будем ждать вас! 😊",
@@ -125,7 +211,11 @@ TEXTS = {
     LANG_EN: {
         "greeting": "Hello. I'm Ziyoda, SATMakon's virtual consultant. How can I help?",
         "ask_city": "Sure. Which city do you live in?",
+        "city_retry": "Please type the city name a little more fully 😊 For example: Tashkent, Samarkand, Bukhara.",
+        "confirm_city": "Did you mean {city}? 😊 Reply yes or no.",
         "ask_branch": "We have two branches in Tashkent: Novza and Minor. Which one is more convenient for you?",
+        "branch_retry": "Please type the branch name a little more clearly 😊 Novza or Minor.",
+        "confirm_branch": "Did you mean the {branch} branch? 😊 Reply yes or no.",
         "ask_phone": "Leave your phone number and an administrator will contact you.",
         "phone_retry": "Send your number in +998 XX XXX XX XX format or share your Telegram contact.",
         "phone_done": "Thank you, your number has been received. We look forward to seeing you! 😊",
@@ -324,37 +414,153 @@ def low_english_level(text: str) -> bool:
     return any(re.search(pattern, value) for pattern in patterns)
 
 
-def detect_city(text: str) -> str | None:
+def _normalize_match_text(text: str) -> str:
     value = (text or "").lower().replace("ё", "е")
-    aliases = {
-        "tashkent": ["toshkent", "tashkent", "ташкент", "тошкент"],
-        "bukhara": ["buxoro", "bukhara", "бухоро", "бухара"],
-        "gulistan": ["guliston", "gulistan", "sirdaryo", "гулистон", "гулистан", "сирдар"],
-        "navoi": ["navoiy", "navoi", "навои", "навоий"],
+    value = value.replace("’", "'").replace("`", "'")
+    value = re.sub(r"[_/\\|,;:!?()\[\]{}]+", " ", value)
+    value = re.sub(r"[-–—]+", " ", value)
+    value = re.sub(r"\s+", " ", value).strip()
+    return value
+
+
+def _levenshtein_distance(a: str, b: str) -> int:
+    if a == b:
+        return 0
+    if not a:
+        return len(b)
+    if not b:
+        return len(a)
+    if len(a) > len(b):
+        a, b = b, a
+    previous = list(range(len(a) + 1))
+    for i, char_b in enumerate(b, start=1):
+        current = [i]
+        for j, char_a in enumerate(a, start=1):
+            insert_cost = current[j - 1] + 1
+            delete_cost = previous[j] + 1
+            replace_cost = previous[j - 1] + (char_a != char_b)
+            current.append(min(insert_cost, delete_cost, replace_cost))
+        previous = current
+    return previous[-1]
+
+
+def _candidate_chunks(text: str) -> list[str]:
+    value = _normalize_match_text(text)
+    if not value:
+        return []
+    words = [word for word in value.split() if word]
+    chunks = list(words)
+    chunks.extend(" ".join(words[i:i + 2]) for i in range(len(words) - 1))
+    if len(words) <= 3:
+        chunks.append(value)
+    return list(dict.fromkeys(chunks))
+
+
+def fuzzy_alias_match(text: str, catalog: dict) -> dict | None:
+    """
+    Exact match -> prefix -> typo-tolerant edit distance -> fuzzy similarity.
+    Short fragments are never auto-accepted.
+    """
+    chunks = _candidate_chunks(text)
+    if not chunks:
+        return None
+
+    ranked = []
+    for key, info in catalog.items():
+        for alias in info["aliases"]:
+            normalized_alias = _normalize_match_text(alias)
+            for chunk in chunks:
+                if not chunk:
+                    continue
+
+                if chunk == normalized_alias:
+                    score = 1.0
+                else:
+                    ratio = SequenceMatcher(None, chunk, normalized_alias).ratio()
+                    distance = _levenshtein_distance(chunk, normalized_alias)
+
+                    if len(chunk) >= 5 and normalized_alias.startswith(chunk):
+                        score = max(ratio, 0.92)
+                    elif len(chunk) >= 5 and distance <= 1:
+                        score = max(ratio, 0.96)
+                    elif len(chunk) >= 5 and distance <= 2 and ratio >= 0.72:
+                        score = max(ratio, 0.90)
+                    else:
+                        score = ratio
+
+                ranked.append((score, key, info["label"], normalized_alias, chunk))
+
+    if not ranked:
+        return None
+
+    ranked.sort(key=lambda row: row[0], reverse=True)
+    best_score, best_key, best_label, best_alias, best_chunk = ranked[0]
+
+    runner_score = 0.0
+    for row in ranked[1:]:
+        if row[1] != best_key:
+            runner_score = row[0]
+            break
+
+    if len(best_chunk) < FUZZY_MIN_TOKEN_LEN and best_score < 1.0:
+        return None
+    if best_score < FUZZY_CONFIRM_THRESHOLD:
+        return None
+
+    ambiguous = runner_score >= best_score - 0.07
+    status = "auto" if best_score >= FUZZY_AUTO_THRESHOLD and not ambiguous else "confirm"
+
+    display_label = best_alias.title() if best_key == "other" else best_label
+    return {
+        "key": best_key,
+        "label": display_label,
+        "alias": best_alias,
+        "score": round(best_score, 4),
+        "status": status,
     }
-    for city, names in aliases.items():
-        if any(name in value for name in names):
-            return city
-    known_other = [
-        "samarqand", "samarkand", "самарканд", "farg'ona", "fergana", "ферган",
-        "andijon", "andijan", "андижан", "namangan", "наманган", "qarshi", "karshi", "карши",
-        "qashqadaryo", "surxondaryo", "termiz", "термез", "xorazm", "urgench", "urganch", "хорезм", "ургенч",
-        "jizzax", "джизак", "nukus", "нукус", "kokand", "qo'qon", "коканд",
-    ]
-    if any(name in value for name in known_other):
-        return "other"
+
+
+def match_city(text: str) -> dict | None:
+    return fuzzy_alias_match(text, CITY_ALIASES)
+
+
+def detect_city(text: str) -> str | None:
+    match = match_city(text)
+    if match and match["status"] == "auto":
+        return match["key"]
     return None
+
+
+def match_branch(text: str) -> dict | None:
+    value = _normalize_match_text(text)
+    if re.search(r"\b(farqi yo['’]?q|bilmayman|bilmadim|без разницы|не знаю|either|any|doesn'?t matter)\b", value):
+        return {"key": "either", "label": "Novza / Minor", "alias": value, "score": 1.0, "status": "auto"}
+    return fuzzy_alias_match(text, BRANCH_ALIASES)
 
 
 def detect_branch(text: str) -> str | None:
-    value = (text or "").lower()
-    if "novza" in value or "новза" in value:
-        return "novza"
-    if "minor" in value or "минор" in value:
-        return "minor"
-    if re.search(r"\b(farqi yo['’]?q|bilmayman|bilmadim|без разницы|не знаю|either|any|doesn't matter)\b", value):
-        return "either"
+    match = match_branch(text)
+    if match and match["status"] == "auto":
+        return match["key"]
     return None
+
+
+def detect_course(text: str) -> str | None:
+    match = fuzzy_alias_match(text, COURSE_ALIASES)
+    if match and match["status"] == "auto":
+        return match["key"]
+    return None
+
+
+def is_yes(text: str) -> bool:
+    value = _normalize_match_text(text)
+    return bool(re.fullmatch(r"(ha+|xa+|yes+|yep|yeah|да+|ага|конечно|албатта|ҳа+)", value))
+
+
+def is_no(text: str) -> bool:
+    value = _normalize_match_text(text)
+    return bool(re.fullmatch(r"(yo['’]?q|yoq|no+|нет+|неа|йўқ)", value))
+
 
 
 def faq_reply(text: str, lang: str) -> str | None:
@@ -394,14 +600,15 @@ def faq_reply(text: str, lang: str) -> str | None:
         return "Telegram: @sat_makon — https://t.me/sat_makon"
 
     if re.search(r"\b(narx|qancha|цена|сколько стоит|price|cost)\b", value):
-        if "foundation" in value:
+        course = detect_course(value)
+        if course == "foundation":
             return {
                 LANG_UZ: f"Foundation narxi bo'yicha noto'g'ri ma'lumot bermaslik uchun admin bilan aniqlashtiring: {ADMIN_USERNAME} yoki {PHONE}.",
                 LANG_UZ_CYR: f"Foundation нархи бўйича нотўғри маълумот бермаслик учун админ билан аниқлаштиринг: {ADMIN_USERNAME} ёки {PHONE}.",
                 LANG_RU: f"Чтобы не назвать неверную цену Foundation, уточните у администратора: {ADMIN_USERNAME} или {PHONE}.",
                 LANG_EN: f"To avoid giving an incorrect Foundation price, please confirm it with the admin: {ADMIN_USERNAME} or {PHONE}.",
             }[lang]
-        if "ap" in value or "calculus" in value:
+        if course == "ap_calculus" or "ap" in value or "calculus" in value:
             return {
                 LANG_UZ: "AP Calculus narxi 1,000,000 so'm/oy.",
                 LANG_UZ_CYR: "AP Calculus нархи ойига 1,000,000 сўм.",
@@ -609,6 +816,54 @@ async def reset(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(TEXTS[previous]["greeting"])
 
 
+async def _accept_city_choice(update: Update, user_id: int, user_text: str, context, city: str, lang: str) -> None:
+    session = get_session(user_id)
+    session.pop("pending_city", None)
+    session.pop("pending_city_label", None)
+    session["city"] = city
+
+    if city == "tashkent":
+        session["state"] = STATE_WAITING_BRANCH
+        save_sessions()
+        await respond(update, user_id, user_text, TEXTS[lang]["ask_branch"])
+        return
+
+    if city == "other":
+        session["state"] = STATE_IDLE
+        save_sessions()
+        await respond(update, user_id, user_text, TEXTS[lang]["no_branch"])
+        return
+
+    branch = {"bukhara": "bukhara", "gulistan": "gulistan", "navoi": "navoi"}[city]
+    session.update({"branch": branch, "state": STATE_WAITING_PHONE})
+    save_sessions()
+    await respond(
+        update,
+        user_id,
+        user_text,
+        TEXTS[lang]["location_intro"].format(url=BRANCHES[branch]),
+    )
+
+
+async def _accept_branch_choice(update: Update, user_id: int, user_text: str, context, branch: str, lang: str) -> None:
+    session = get_session(user_id)
+    session.pop("pending_branch", None)
+    session.pop("pending_branch_label", None)
+    session["branch"] = branch
+    session["state"] = STATE_WAITING_PHONE
+    save_sessions()
+
+    if branch == "either":
+        reply = TEXTS[lang]["locations_intro"].format(
+            url1=BRANCHES["novza"],
+            url2=BRANCHES["minor"],
+        )
+    else:
+        reply = TEXTS[lang]["location_intro"].format(url=BRANCHES[branch])
+
+    await respond(update, user_id, user_text, reply)
+
+
 async def process_user_message(user_id: int, combined_text: str, update: Update, context) -> None:
     session = get_session(user_id)
     lang = detect_language(combined_text, session.get("language", LANG_UZ))
@@ -634,16 +889,116 @@ async def process_user_message(user_id: int, combined_text: str, update: Update,
             await respond(update, user_id, combined_text, TEXTS[lang]["phone_cancelled"])
             return
         if is_question(combined_text):
-            # Do not trap a user in phone collection. Answer the new question normally.
             session["state"] = STATE_IDLE
             save_sessions()
         else:
             await respond(update, user_id, combined_text, TEXTS[lang]["phone_retry"])
             return
-    elif phone and enrollment_intent(" ".join(x.get("content", "") for x in histories.get(user_id, [])[-5:] if x.get("role") == "user")):
+    elif phone and enrollment_intent(" ".join(
+        x.get("content", "")
+        for x in histories.get(user_id, [])[-5:]
+        if x.get("role") == "user"
+    )):
         await finalize_phone(update.effective_user, user_id, phone, context)
         await respond(update, user_id, combined_text, TEXTS[lang]["phone_done"])
         return
+
+    state = session.get("state", STATE_IDLE)
+
+    # Medium-confidence city: accept yes/no, or let the user type a corrected city directly.
+    if state == STATE_CONFIRM_CITY:
+        pending_city = session.get("pending_city")
+        pending_label = session.get("pending_city_label", "Toshkent")
+
+        if is_yes(combined_text) and pending_city:
+            await _accept_city_choice(update, user_id, combined_text, context, pending_city, lang)
+            return
+
+        if is_no(combined_text) or is_cancel(combined_text):
+            session.pop("pending_city", None)
+            session.pop("pending_city_label", None)
+            session["state"] = STATE_WAITING_CITY
+            save_sessions()
+            await respond(update, user_id, combined_text, TEXTS[lang]["city_retry"])
+            return
+
+        revised = match_city(combined_text)
+        if revised:
+            if revised["status"] == "auto":
+                await _accept_city_choice(update, user_id, combined_text, context, revised["key"], lang)
+                return
+            session["pending_city"] = revised["key"]
+            session["pending_city_label"] = revised["label"]
+            save_sessions()
+            await respond(
+                update,
+                user_id,
+                combined_text,
+                TEXTS[lang]["confirm_city"].format(city=revised["label"]),
+            )
+            return
+
+        if is_question(combined_text):
+            session.pop("pending_city", None)
+            session.pop("pending_city_label", None)
+            session["state"] = STATE_IDLE
+            save_sessions()
+        else:
+            await respond(
+                update,
+                user_id,
+                combined_text,
+                TEXTS[lang]["confirm_city"].format(city=pending_label),
+            )
+            return
+
+    # Medium-confidence branch: same behavior as city confirmation.
+    state = session.get("state", STATE_IDLE)
+    if state == STATE_CONFIRM_BRANCH:
+        pending_branch = session.get("pending_branch")
+        pending_label = session.get("pending_branch_label", "Novza")
+
+        if is_yes(combined_text) and pending_branch:
+            await _accept_branch_choice(update, user_id, combined_text, context, pending_branch, lang)
+            return
+
+        if is_no(combined_text) or is_cancel(combined_text):
+            session.pop("pending_branch", None)
+            session.pop("pending_branch_label", None)
+            session["state"] = STATE_WAITING_BRANCH
+            save_sessions()
+            await respond(update, user_id, combined_text, TEXTS[lang]["branch_retry"])
+            return
+
+        revised = match_branch(combined_text)
+        if revised:
+            if revised["status"] == "auto":
+                await _accept_branch_choice(update, user_id, combined_text, context, revised["key"], lang)
+                return
+            session["pending_branch"] = revised["key"]
+            session["pending_branch_label"] = revised["label"]
+            save_sessions()
+            await respond(
+                update,
+                user_id,
+                combined_text,
+                TEXTS[lang]["confirm_branch"].format(branch=revised["label"]),
+            )
+            return
+
+        if is_question(combined_text):
+            session.pop("pending_branch", None)
+            session.pop("pending_branch_label", None)
+            session["state"] = STATE_IDLE
+            save_sessions()
+        else:
+            await respond(
+                update,
+                user_id,
+                combined_text,
+                TEXTS[lang]["confirm_branch"].format(branch=pending_label),
+            )
+            return
 
     if low_english_level(combined_text):
         session.update({"state": STATE_WAITING_CITY, "topic": "Foundation"})
@@ -653,49 +1008,70 @@ async def process_user_message(user_id: int, combined_text: str, update: Update,
 
     state = session.get("state", STATE_IDLE)
     if state == STATE_WAITING_CITY:
-        city = detect_city(combined_text)
-        if not city:
+        city_match = match_city(combined_text)
+
+        if not city_match:
             if is_question(combined_text):
                 session["state"] = STATE_IDLE
                 save_sessions()
             else:
-                await respond(update, user_id, combined_text, TEXTS[lang]["ask_city"])
+                await respond(update, user_id, combined_text, TEXTS[lang]["city_retry"])
                 return
-        else:
-            session["city"] = city
-            if city == "tashkent":
-                session["state"] = STATE_WAITING_BRANCH
-                save_sessions()
-                await respond(update, user_id, combined_text, TEXTS[lang]["ask_branch"])
-                return
-            if city == "other":
-                session["state"] = STATE_IDLE
-                save_sessions()
-                await respond(update, user_id, combined_text, TEXTS[lang]["no_branch"])
-                return
-            branch = {"bukhara": "bukhara", "gulistan": "gulistan", "navoi": "navoi"}[city]
-            session.update({"branch": branch, "state": STATE_WAITING_PHONE})
+        elif city_match["status"] == "confirm":
+            session["pending_city"] = city_match["key"]
+            session["pending_city_label"] = city_match["label"]
+            session["state"] = STATE_CONFIRM_CITY
             save_sessions()
-            await respond(update, user_id, combined_text, TEXTS[lang]["location_intro"].format(url=BRANCHES[branch]))
+            await respond(
+                update,
+                user_id,
+                combined_text,
+                TEXTS[lang]["confirm_city"].format(city=city_match["label"]),
+            )
+            return
+        else:
+            await _accept_city_choice(
+                update,
+                user_id,
+                combined_text,
+                context,
+                city_match["key"],
+                lang,
+            )
             return
 
+    state = session.get("state", STATE_IDLE)
     if state == STATE_WAITING_BRANCH:
-        branch = detect_branch(combined_text)
-        if not branch:
+        branch_match = match_branch(combined_text)
+
+        if not branch_match:
             if is_question(combined_text):
                 session["state"] = STATE_IDLE
                 save_sessions()
             else:
-                await respond(update, user_id, combined_text, TEXTS[lang]["ask_branch"])
+                await respond(update, user_id, combined_text, TEXTS[lang]["branch_retry"])
                 return
-        else:
-            session["branch"] = branch
-            session["state"] = STATE_WAITING_PHONE
+        elif branch_match["status"] == "confirm":
+            session["pending_branch"] = branch_match["key"]
+            session["pending_branch_label"] = branch_match["label"]
+            session["state"] = STATE_CONFIRM_BRANCH
             save_sessions()
-            if branch == "either":
-                await respond(update, user_id, combined_text, TEXTS[lang]["locations_intro"].format(url1=BRANCHES["novza"], url2=BRANCHES["minor"]))
-            else:
-                await respond(update, user_id, combined_text, TEXTS[lang]["location_intro"].format(url=BRANCHES[branch]))
+            await respond(
+                update,
+                user_id,
+                combined_text,
+                TEXTS[lang]["confirm_branch"].format(branch=branch_match["label"]),
+            )
+            return
+        else:
+            await _accept_branch_choice(
+                update,
+                user_id,
+                combined_text,
+                context,
+                branch_match["key"],
+                lang,
+            )
             return
 
     if enrollment_intent(combined_text):
