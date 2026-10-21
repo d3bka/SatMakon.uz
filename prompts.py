@@ -34,7 +34,7 @@ YouTube: https://youtube.com/@sat_makon_uz
 Branches:
 - Tashkent, Novza: https://yandex.uz/maps/-/CPSf6Tmj
 - Tashkent, Minor: https://yandex.uz/maps/-/CPSfbZPb
-- Bukhara: https://yandex.uz/maps/-/CPSfbSzm
+- Bukhara: https://yandex.uz/maps/?pt=64.43023,39.76359&z=17&l=map
 - Gulistan/Sirdaryo: https://maps.app.goo.gl/F7xSBxxiSqXPbN5i9
 - Navoi: https://maps.app.goo.gl/F6LmXdmfCEARyRbg9
 
@@ -65,33 +65,34 @@ Lesson schedule for SAT/Pre-SAT:
 Free/open lesson:
 - a free open lesson is available at the centre.
 
-PRICES
-Pre-SAT:
-- one subject: 900,000 UZS/month
-- two subjects: 1,700,000 UZS/month
-SAT:
-- one subject: 900,000 UZS/month
-- two subjects: 1,700,000 UZS/month
-AP Calculus:
-- 1,000,000 UZS/month
+PRICES (per month)
+Group:
+- one subject (English or Math), 3 lessons a week, 12 lessons a month: 1,000,000 UZS/month
+- two subjects (full Digital SAT, 3 English + 3 Math a week, 24 lessons a month): 1,900,000 UZS/month (most popular, saves 100,000)
+Mini group (3 to 6 students): 2,500,000 UZS/month
+Pair (2 students): 3,000,000 UZS/month
+Individual (1 student + 1 teacher): 3,500,000 UZS/month
+Payment: Click, Payme, Uzum Bank, or cash/card at the branch. Monthly payment or 0% installments. Official contract and receipt.
+Included in every plan: 12-hour daily co-working zone, free real-format mock test every Sunday, Makonbook platform, 100+ real SAT materials, Academic Support sessions, parent progress reports.
 Do not invent discounts or other prices.
 
 TEACHERS
-SAT Math:
-- Xasanbek Xo'jamberdiyev — Math 800/800
-- Yoqubjon Isaqjonov
-- Akhmad Khusniddinov
-SAT English:
-- Farruh Farhodov — English 800, total SAT 1600/1600
-- Jamoliddin Yazdonov — English 800, total SAT 1600/1600
-- Farruh Davronov — English 780
+Head teachers:
+- Abduhakimov Sunnatillo — Math head teacher (all branches), Math 800, SAT 1600
+- Mr. Ahmad — Math head teacher (all branches), Math 800, SAT 1580
+- Javohir Rahimjanov — English head teacher (Tashkent branches), English 730, SAT 1510
+1600 teachers: Mr. Farrukh — 1600; Mr. Jamoliddin — 1600
+SAT English: Xurshid Sobirjonov — 790; Shahzoda Ozodova — 750; Azizbekov Sunnatjon — 740; Sag'diyeva Ziyoda — 740
+SAT Math: Mr. Xasan — 800/800, SAT 1600; Alisher Mavlonov — Math 800, SAT 1530; Atabek Nizamatdinov, Dilnoza Ulugbekovna, Xolturayev Sarvar, Jaksimuratov Berdaq — Math 800
+Academic Support: Maqsudbek Xolboyev, Munisa Rustamova — Math 800; Bobur Faxriddinov, Sabina Habibova — English 740
 When a specific subject is asked, answer only about that subject. Do not force a follow-up question after listing teachers.
 
 RESULTS / MARKETING FACTS AVAILABLE IN THE PROJECT
-- 25,000+ learners
-- stated average SAT score: 1527
-- stated total scholarships won: $10M+
-- stated annual scholarship opportunities: $10,000-$70,000
+- 8,856 students have studied at SATMakon; 1,469 are studying now
+- operating since 2024; 5 branches (Tashkent Novza, Tashkent Minor, Guliston, Navoiy, Bukhara)
+- stated average SAT score: 1520+; maximum result: 1600
+- stated total grants won: $4.8M+
+- SAT 3 October 2026: 14 students scored 1500+ (top: Boburbek Xudayberdiyev 1590)
 Present these as SATMakon's stated results; do not add stronger claims such as national rarity unless explicitly supplied here.
 
 POLICY

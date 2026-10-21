@@ -780,6 +780,40 @@ section.bg-gray { background: #F5F5F7; }
 @media (max-width: 560px) {
   .student-img-card { flex-basis: 220px; }
 }
+/* Latest official results (text cards, same marquee + hover as photo cards) */
+.latest-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 20px; padding: 8px 16px; border-radius: 999px;
+  background: var(--brand-tint, #EDE9FE); color: var(--brand-ink, #2E1065);
+  font-size: 14px; font-weight: 700; letter-spacing: -0.005em;
+}
+.result-card {
+  flex: 0 0 240px;
+  position: relative; overflow: hidden;
+  border-radius: 20px; padding: 20px 20px 18px;
+  min-height: 180px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  color: #fff;
+  background: radial-gradient(120% 90% at 100% 0%, #8B5CF6 0%, rgba(139,92,246,0) 60%), linear-gradient(160deg, #7C3AED 0%, #4C1D95 100%);
+  box-shadow: 0 18px 40px rgba(124,58,237,0.22), 0 0 0 1px rgba(17,17,20,0.04);
+  transition: transform .35s cubic-bezier(.2,.7,.3,1), box-shadow .35s cubic-bezier(.2,.7,.3,1);
+  -webkit-user-select: none; user-select: none;
+}
+.result-card:hover {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 0 26px 56px rgba(124,58,237,0.32), 0 0 0 1px rgba(17,17,20,0.06);
+}
+.result-card .rc-rank { position: absolute; top: 16px; left: 20px; font-size: 12px; font-weight: 700; opacity: 0.7; }
+.result-card .rc-score {
+  font-family: var(--font-display); font-weight: 900; font-size: 56px; line-height: 1;
+  letter-spacing: -0.04em; color: var(--accent-gold, #E5FF4E);
+}
+.result-card .rc-name { margin-top: 8px; font-size: 16px; font-weight: 700; line-height: 1.25; }
+.result-card .rc-badge { margin-top: 10px; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; color: #FDE68A; }
+@media (max-width: 560px) {
+  .result-card { flex-basis: 200px; min-height: 160px; padding: 16px; }
+  .result-card .rc-score { font-size: 46px; }
+}
 /* Teachers row — same size as student cards */
 .students-rows[aria-label="Teachers"] .student-img-card { flex-basis: 300px; }
 @media (max-width: 880px) {
@@ -1645,35 +1679,35 @@ window.COPY = {
   uz: {
     nav: { sat: "SAT tayyorlov", pricing: "Tariflar", faq: "Savollar", makonai: "makon.ai", location: "Manzil", cta: "Boshlash", mock: "Bepul Mock" },
     hero: {
-      badge: "1520+ SAT kafolati",
+      badge: "Digital SAT yagona tayyorlov tizimi",
       h1a: "SATMakon —",
       h1b: "Universitetga ilk qadam biz bilan",
       sub: "Yetakchi universitetlarga intilayotganlar uchun yuqori samarali SAT va AP tayyorlovi.",
       cta1: "Biz bilan bog'laning!", cta2: "Tariflarni ko'rish",
-      social: "25K+ o'quvchi bizga ishongan  ·  2025-da 30% 1500+ ball oldi",
+      social: "8 856 o'quvchi biz bilan o'qigan  ·  3-oktabr SAT: 14 o'quvchi 1500+",
       stats: [
-        { n: "1,600", l: "Ustozlarimizning SAT bali" },
-        { n: "300+", l: "1500+ ball qo'lga kiritgan o'quvchilarimiz" },
-        { n: "20+",    l: "Top-10 universitetlarni zabt etgan o'quvchilarimiz" },
-        { n: "$10M+", l: "Stipendiyalar" },
+        { n: "1,600", l: "Maksimal natija" },
+        { n: "1520+", l: "O'rtacha ball" },
+        { n: "8,856", l: "O'quvchi biz bilan o'qigan" },
+        { n: "$4.8M+", l: "Yutilgan grantlar" },
       ],
     },
     satSec: {
       eyebrow: "SAT HAQIDA",
       h: ["SAT —", "asosiy kirish testi"],
       cards: [
-        { t: "SAT nima?", b: "AQSh va 180+ mamlakatdagi universitetlar uchun standart kirish testi. Ball 400 dan 1600 gacha." },
-        { t: "Nega muhim?", b: "Harvard, Stanford, MIT — SAT balingizga qarab baho beradi. 1500+ — bu katta stipendiya imkoniyati." },
-        { t: "1500+ ball — qanday eshiklarni ochadi?", b: "Yiliga $10 000–$70 000 grant. Harvard, MIT, Stanford, NYU, Berkeley — barchasiga ariza yo'li ochiladi." },
+        { t: "SAT nima?", b: "College Board tomonidan o'tkaziladigan xalqaro standart kirish testi. Ball 400 dan 1600 gacha (Reading & Writing 800 + Math 800). Imtihon 187 ta mamlakatda topshiriladi." },
+        { t: "Nega muhim?", b: "MIT, Harvard, Stanford kabi universitetlar yana SAT natijasini talab qilmoqda. AQShdan tashqari 85 ta mamlakatdagi 500 dan ortiq OTM ham SAT ballini qabulda hisobga oladi." },
+        { t: "1500+ ball — qanday eshiklarni ochadi?", b: "Eng kuchli universitetlar uchun raqobatbardosh natija. Yuqori ball merit-stipendiya va moliyaviy yordam olish imkoniyatini sezilarli oshiradi." },
       ],
       benefitsTitle: "SAT — O'zbekistonda nima beradi?",
       decreeLink: "Prezident Farmonini o'qish",
       benefits: [
-        "1200+ ball — SAT imtihon to'lovi davlat tomonidan qaytariladi",
-        "1200+ natija bilan O'zbekiston OTMlariga grant asosida qabul",
-        "Prezident farmoni: SAT sertifikati davlat universitetlarida tan olinadi",
-        "Bitta sertifikat — ham O'zbekistonda, ham xorijda ariza yo'li ochiq",
-        "Imtihonsiz muqobil yo'l: 73 litseyda IB va A-Level dasturlari",
+        "1200+ ball (75%+) — SAT imtihon xarajati davlat tomonidan qoplanadi (hukumat qarori, 2021-yildan)",
+        "1200+ ball — OTMlarga qo'shimcha davlat granti asosida imtihonsiz qabul (matematika + chet tili yo'nalishlari)",
+        "Vazirlar Mahkamasining 578-son qarori (13.09.2025): SAT natijasi OTMga qabulda rasman hisobga olinadi",
+        "Bitta sertifikat — ham O'zbekistonda, ham xorijda ariza topshirish yo'li ochiq",
+        "Muqobil yo'l: 73 ta akademik litseyda IB va A-Level dasturlari — sertifikat bilan OTMga imtihonsiz, kontrakt asosida qabul",
       ],
     },
     apSec: {
@@ -1720,6 +1754,26 @@ window.COPY = {
       h: ["Bizning o'quvchilarimiz,", "top universitetlarda"],
       sub: "300+ o'quvchimiz 1500+ ball oldishdi. Marhamat!",
       tag: "keyingisi — siz bo'lishingiz mumkin",
+      latest: {
+        title: "SAT 3-oktabr 2026 · 14 o'quvchi 1500+ ball oldi",
+        badge: "TOP SCORE",
+        items: [
+          { name: "Boburbek Xudayberdiyev", score: "1590" },
+          { name: "Tair Shamuratov", score: "1560" },
+          { name: "Daniel Uram", score: "1550" },
+          { name: "Darina Taibekova", score: "1550" },
+          { name: "Abubakr Mahmudov", score: "1540" },
+          { name: "Iroda Gapparova", score: "1540" },
+          { name: "Muhammad Yusuf Meliqo'ziyev", score: "1540" },
+          { name: "Nikita Berozin", score: "1540" },
+          { name: "Tolganay Ryskhozha", score: "1540" },
+          { name: "Doniyor B Rustamov", score: "1530" },
+          { name: "Sabina Alikulova", score: "1520" },
+          { name: "Abdulloh Abdurahimov", score: "1510" },
+          { name: "Muhammadaziz Numonov", score: "1500" },
+          { name: "Nurymkhan Berkin", score: "1500" },
+        ],
+      },
       list: [
         { name: "Maral Yermek", score: "1530" },
         { name: "Madiyar Nassipkali", score: "1560" },
@@ -1753,7 +1807,7 @@ window.COPY = {
     },
     teachers: {
       h: ["Bizning", "ustozlarimiz"],
-      sub: "1500+ ball olgan, har bir o'quvchiga mukammallikni o'rgatadigan jamoa.",
+      sub: "Head teacherlar, 1600 ballik ustozlar, Matematika 800 va Ingliz tili 740+ jamoasi — natijalar bo'yicha.",
     },
     unis: { label: "O'quvchilarimiz top universitetlarga kirishdi" },
     path: {
@@ -1769,36 +1823,36 @@ window.COPY = {
     pricing: {
       eyebrow: "TARIFLAR",
       h: ["Tarifingizni", "tanlang"],
-      note: "Barcha tariflar makon.ai to'liq obunasini o'z ichiga oladi.",
-      rec: "TAVSIYA",
+      note: "Shaffof oylik to'lov. Barcha imkoniyatlar kurs to'loviga kiritilgan: 12 soatlik Co-working, har yakshanba bepul mock test, Makonbook platformasi.",
+      rec: "ENG OMMABOP",
       enroll: "Yozilish",
       per: "so'm",
-      foot: "* To'liq shartlar va chegirmalar bepul konsultatsiyada muhokama qilinadi.",
+      foot: "💳 Click, Payme, Uzum yoki filialda naqd / karta orqali  ·  ✨ 0% foizsiz bo'lib to'lash  ·  🧾 Rasmiy shartnoma va to'lov kvitansiyasi",
       courses: [
         {
-          name: "PRE-SAT",
-          sub: "Universitetga dastlabki tayyorgarlik",
-          dur: "2–3 oy",
+          name: "GURUH",
+          sub: "Haftada 3 kun, 2 soatdan · mock test va tahlil",
+          dur: "Oylik to'lov",
           tiers: [
-            { label: "1 fan (Matematika yoki Ingliz tili)", price: "900 000" },
-            { label: "2 fan (Matematika va Ingliz tili)", price: "1 700 000", recommended: true },
+            { label: "1 fan · oyiga 12 dars", price: "1 000 000" },
+            { label: "2 fan · to'liq SAT, 24 dars", price: "1 900 000", recommended: true },
           ],
         },
         {
-          name: "SAT",
-          sub: "Asosiy tayyorlov dasturi",
-          dur: "3–5 oy",
+          name: "KICHIK FORMAT",
+          sub: "Kichik guruhda ko'proq e'tibor · moslashuvchan jadval",
+          dur: "Oylik to'lov",
           tiers: [
-            { label: "1 fan (Matematika yoki Ingliz tili)", price: "900 000" },
-            { label: "2 fan (Matematika va Ingliz tili)", price: "1 700 000", recommended: true },
+            { label: "Mini guruh · 3–6 kishi", price: "2 500 000" },
+            { label: "Juftlik · 2 kishi", price: "3 000 000" },
           ],
         },
         {
-          name: "AP CALCULUS",
-          sub: "Advanced Placement fanlari",
-          dur: "2–4 oy",
+          name: "INDIVIDUAL",
+          sub: "To'liq shaxsiy dastur va test strategiyasi",
+          dur: "Oylik to'lov",
           tiers: [
-            { label: "Bitta AP fan", price: "1 000 000" },
+            { label: "1 o'quvchi + 1 ustoz", price: "3 500 000" },
           ],
         },
       ],
@@ -1806,8 +1860,12 @@ window.COPY = {
     faq: {
       h: ["Ko'p beriladigan", "savollar"],
       items: [
+        { q:"Qayerdan boshlash kerak?", a:"Suhbatda darajani aniqlab, mos bosqichdan boshlaymiz: Foundation, Pre-SAT, Advanced (SAT) yoki AP." },
+        { q:"Ustozlar kimlar?", a:"SAT'da 1600 va 800/800 natija ko'rsatgan, AP va A-level sertifikatli ustozlar." },
+        { q:"Natija qanday nazorat qilinadi?", a:"Makonbook'da mock va batafsil tahlil, ustoz va ota-ona kuzatuvi orqali nazorat qilinadi." },
+        { q:"Kurs narxlari qancha?", a:"Guruh: 1 ta fan — 1 000 000 so'm, 2 ta fan — 1 900 000 so'm. Mini guruh — 2 500 000, juftlik — 3 000 000, individual — 3 500 000 so'm (oyiga)." },
+        { q:"To'lovni qanday usullarda va bo'lib to'lasa bo'ladimi?", a:"Click, Payme, Uzum Bank yoki filialda naqd / karta orqali. Oylik to'lash yoki 0% foizsiz bo'lib to'lash imkoniyati mavjud." },
         { q:"SAT va AP orasidagi farq nima?", a:"SAT — universitetga kirish standart testi (400–1600). AP — alohida fanlar bo'yicha universitet darajasidagi imtihonlar (1–5). Ikkalasi ham arizani kuchaytiradi va stipendiyaga olib keladi." },
-        { q:"Qaysi ball bilan kursga qo'shilish mumkin?", a:"Har qanday boshlang'ich ball bilan yordam bera olamiz — bepul konsultatsiyada gaplashamiz." },
         { q:"Darslar qanday formatda o'tadi?", a:"Ham onlayn, ham oflayn guruhlar mavjud — o'zingizga qulay formatni tanlashingiz mumkin." },
         { q:"AP imtihonlari qachon?", a:"Har yil may oyida — College Board sanalari bo'yicha. Tayyorgarlikni 3–4 oy oldin boshlash — eng to'g'risi." },
         { q:"Toshkentdan yoki boshqa shahardan o'qish mumkinmi?", a:"Ha, kurslarimiz onlayn formatda ham mavjud." },
@@ -1833,20 +1891,20 @@ window.COPY = {
       close: "Yopish",
     },
     footer: {
-      rights: "© 2025 SAT Makon. Barcha huquqlar himoyalangan.",
+      rights: "© 2026 SAT Makon. Barcha huquqlar himoyalangan.",
       links: ["SAT tayyorlov","AP kurslar","Tariflar","Savollar"],
       location: "Manzilimiz",
       locations: [
         { name: "Toshkent — Novza filiali",      url: "https://yandex.uz/maps/-/CPSf6Tmj" },
         { name: "Toshkent — Minor filiali",  url: "https://yandex.uz/maps/-/CTSDjC0I" },
-        { name: "Buxoro filiali",                url: "https://yandex.uz/maps/-/CPSfbSzm" },
+        { name: "Buxoro filiali",                url: "https://yandex.uz/maps/?pt=64.43023,39.76359&z=17&l=map" },
         { name: "Guliston (Sirdaryo) filiali",   url: "https://maps.app.goo.gl/F7xSBxxiSqXPbN5i9" },
         { name: "Navoiy filiali",                url: "https://maps.app.goo.gl/F6LmXdmfCEARyRbg9" },
       ],
       locationPickerTitle: "Qaysi filialga borasiz?",
       locationPickerFoot: "Keling! Darajangizni aniqlab, sizga mos guruhni tanlab beramiz.",
       phone: "+998 55 511 16 00",
-      bot: "@satmakonn_bot",
+      bot: "@makonadminbot",
       botUrl: "https://t.me/makonadminbot",
     },
   },
@@ -1854,35 +1912,35 @@ window.COPY = {
   ru: {
     nav: { sat: "SAT подготовка", pricing: "Тарифы", faq: "Вопросы", makonai: "makon.ai", location: "Адрес", cta: "Начать", mock: "Бесплатный Mock" },
     hero: {
-      badge: "Гарантия 1520+ SAT",
+      badge: "Единая система подготовки к Digital SAT",
       h1a: "SATMakon —",
-      h1b: "Первый шаг в университет  с нами",
+      h1b: "Первый шаг в университет с нами",
       sub: "Высокоэффективная подготовка к SAT и AP для тех, кто метит в ведущие университеты.",
       cta1: "Свяжитесь с нами!", cta2: "Посмотреть тарифы",
-      social: "Нам доверяют 25K+ учеников  ·  в 2025 30% набрали 1500+",
+      social: "8 856 учеников учились у нас  ·  SAT 3 октября: 14 учеников 1500+",
       stats: [
-        { n: "1,600", l: "Балл SAT наших преподавателей" },
-        { n: "300+", l: "Наших учеников набрали 1500+" },
-        { n: "20+",  l: "Наших учеников поступили в Топ-10 университетов" },
-        { n: "$10M+", l: "Стипендии" },
+        { n: "1,600", l: "Максимальный результат" },
+        { n: "1520+", l: "Средний балл" },
+        { n: "8,856", l: "Учеников прошли обучение" },
+        { n: "$4.8M+", l: "Выигранные гранты" },
       ],
     },
     satSec: {
       eyebrow: "О SAT",
       h: ["SAT —", "главный вступительный экзамен"],
       cards: [
-        { t: "Что такое SAT?", b: "Стандартизированный вступительный тест для университетов США и 180+ стран. Балл — от 400 до 1600." },
-        { t: "Почему это важно?", b: "Harvard, Stanford, MIT — оценивают Вас по баллу SAT. 1500+ — это большой шанс на серьёзную стипендию." },
-        { t: "Что открывает 1500+ балл?", b: "От $10 000 до $70 000 гранта в год. Harvard, MIT, Stanford, NYU, Berkeley — двери к подаче во все эти вузы открыты." },
+        { t: "Что такое SAT?", b: "Международный стандартизированный вступительный тест College Board. Балл от 400 до 1600 (Reading & Writing 800 + Math 800). Экзамен сдают в 187 странах." },
+        { t: "Почему это важно?", b: "MIT, Harvard, Stanford снова требуют результат SAT. Кроме США, более 500 вузов в 85 странах учитывают балл SAT при поступлении." },
+        { t: "Что открывает 1500+ балл?", b: "Конкурентный результат для сильнейших университетов. Высокий балл заметно повышает шансы на merit-стипендию и финансовую помощь." },
       ],
       benefitsTitle: "SAT — что оно даёт в Узбекистане?",
       decreeLink: "Читать Указ Президента",
       benefits: [
-        "1200+ баллов — государство возвращает оплату за экзамен SAT",
-        "С 1200+ — поступление в вузы Узбекистана на грантовой основе",
-        "Указ Президента: сертификат SAT признаётся государственными университетами",
-        "Один сертификат — открыт путь и в Узбекистан, и за рубеж",
-        "Альтернатива без экзамена: программы IB и A-Level в 73 лицеях",
+        "1200+ баллов (75%+) — расходы на экзамен SAT покрывает государство (постановление правительства, с 2021 года)",
+        "1200+ баллов — поступление в вузы без экзаменов на дополнительный госгрант (направления математика + иностранный язык)",
+        "Постановление Кабмина № 578 (13.09.2025): результат SAT официально учитывается при поступлении в вузы",
+        "Один сертификат — открыт путь к поступлению и в Узбекистане, и за рубежом",
+        "Альтернатива: программы IB и A-Level в 73 академических лицеях — поступление в вуз по сертификату без экзаменов, на контракт",
       ],
     },
     apSec: {
@@ -1922,6 +1980,26 @@ window.COPY = {
       h: ["Наши ученики,", "в топ-университетах"],
       sub: "300+ наших учеников набрали 1500+. Пожалуйста, знакомьтесь!",
       tag: "следующий — можете быть Вы",
+      latest: {
+        title: "SAT 3 октября 2026 · 14 учеников набрали 1500+",
+        badge: "TOP SCORE",
+        items: [
+          { name: "Boburbek Xudayberdiyev", score: "1590" },
+          { name: "Tair Shamuratov", score: "1560" },
+          { name: "Daniel Uram", score: "1550" },
+          { name: "Darina Taibekova", score: "1550" },
+          { name: "Abubakr Mahmudov", score: "1540" },
+          { name: "Iroda Gapparova", score: "1540" },
+          { name: "Muhammad Yusuf Meliqo'ziyev", score: "1540" },
+          { name: "Nikita Berozin", score: "1540" },
+          { name: "Tolganay Ryskhozha", score: "1540" },
+          { name: "Doniyor B Rustamov", score: "1530" },
+          { name: "Sabina Alikulova", score: "1520" },
+          { name: "Abdulloh Abdurahimov", score: "1510" },
+          { name: "Muhammadaziz Numonov", score: "1500" },
+          { name: "Nurymkhan Berkin", score: "1500" },
+        ],
+      },
       list: [
         { name: "Марал Ермек", score: "1530" },
         { name: "Мадияр Насипкали", score: "1560" },
@@ -1955,7 +2033,7 @@ window.COPY = {
     },
     teachers: {
       h: ["Наши", "преподаватели"],
-      sub: "Команда, которая сама набрала 1500+ и ведёт каждого ученика к высшему результату.",
+      sub: "Head-преподаватели, учителя с 1600, команда Math 800 и English 740+ — по результатам.",
     },
     unis: { label: "Наши ученики поступили в топ-вузы" },
     path: {
@@ -1971,36 +2049,36 @@ window.COPY = {
     pricing: {
       eyebrow: "ТАРИФЫ",
       h: ["Выберите", "свой тариф"],
-      note: "Все тарифы включают полную подписку makon.ai.",
-      rec: "РЕКОМЕНДУЕМ",
+      note: "Прозрачная ежемесячная оплата. Всё включено в стоимость: 12-часовой Co-working, бесплатный mock-тест каждое воскресенье, платформа Makonbook.",
+      rec: "САМЫЙ ПОПУЛЯРНЫЙ",
       enroll: "Записаться",
       per: "сум",
-      foot: "* Полные условия и скидки обсуждаются на бесплатной консультации.",
+      foot: "💳 Click, Payme, Uzum или наличными / картой в филиале  ·  ✨ Рассрочка 0%  ·  🧾 Официальный договор и квитанция",
       courses: [
         {
-          name: "PRE-SAT",
-          sub: "Начальная подготовка к SAT",
-          dur: "2–3 мес",
+          name: "ГРУППА",
+          sub: "3 раза в неделю по 2 часа · mock-тест и разбор",
+          dur: "Оплата в месяц",
           tiers: [
-            { label: "1 предмет (Математика или Английский)", price: "900 000" },
-            { label: "2 предмета (Математика и Английский)", price: "1 700 000", recommended: true },
+            { label: "1 предмет · 12 занятий", price: "1 000 000" },
+            { label: "2 предмета · полный SAT, 24 занятия", price: "1 900 000", recommended: true },
           ],
         },
         {
-          name: "SAT",
-          sub: "Основная программа подготовки",
-          dur: "3–5 мес",
+          name: "МАЛЫЙ ФОРМАТ",
+          sub: "Больше внимания в малой группе · гибкое расписание",
+          dur: "Оплата в месяц",
           tiers: [
-            { label: "1 предмет (Математика или Английский)", price: "900 000" },
-            { label: "2 предмета (Математика и Английский)", price: "1 700 000", recommended: true },
+            { label: "Мини-группа · 3–6 чел.", price: "2 500 000" },
+            { label: "Пара · 2 чел.", price: "3 000 000" },
           ],
         },
         {
-          name: "AP CALCULUS",
-          sub: "Программа Advanced Placement",
-          dur: "2–4 мес",
+          name: "ИНДИВИДУАЛЬНО",
+          sub: "Полностью личная программа и стратегия теста",
+          dur: "Оплата в месяц",
           tiers: [
-            { label: "Один AP-предмет", price: "1 000 000" },
+            { label: "1 ученик + 1 преподаватель", price: "3 500 000" },
           ],
         },
       ],
@@ -2008,8 +2086,12 @@ window.COPY = {
     faq: {
       h: ["Частые", "вопросы"],
       items: [
+        { q:"С чего начать?", a:"На беседе определяем уровень и начинаем с подходящего этапа: Foundation, Pre-SAT, Advanced (SAT) или AP." },
+        { q:"Кто преподаватели?", a:"Преподаватели с результатами 1600 и 800/800 на SAT, с сертификатами AP и A-level." },
+        { q:"Как контролируется результат?", a:"Mock-тесты и подробный разбор в Makonbook, контроль преподавателя и родителей." },
+        { q:"Сколько стоит обучение?", a:"Группа: 1 предмет — 1 000 000 сум, 2 предмета — 1 900 000 сум. Мини-группа — 2 500 000, пара — 3 000 000, индивидуально — 3 500 000 сум (в месяц)." },
+        { q:"Как можно оплатить и есть ли рассрочка?", a:"Click, Payme, Uzum Bank или наличными / картой в филиале. Помесячная оплата или рассрочка 0%." },
         { q:"В чём разница между SAT и AP?", a:"SAT — стандартизированный вступительный тест (400–1600). AP — экзамены по отдельным предметам университетского уровня (1–5). И то, и другое усиливает заявку и открывает стипендии." },
-        { q:"С каким баллом можно записаться на курс?", a:"Поможем с любым стартовым баллом — обсудим на бесплатной консультации." },
         { q:"В каком формате проходят занятия?", a:"Есть и онлайн, и офлайн группы — выбираете формат, который удобен Вам." },
         { q:"Когда проходят экзамены AP?", a:"Каждый май — по датам College Board. Начинать подготовку лучше за 3–4 месяца." },
         { q:"Можно ли заниматься из Ташкента или другого города?", a:"Да, наши курсы также доступны онлайн." },
@@ -2035,20 +2117,20 @@ window.COPY = {
       close: "Закрыть",
     },
     footer: {
-      rights: "© 2025 SAT Makon. Все права защищены.",
+      rights: "© 2026 SAT Makon. Все права защищены.",
       links: ["SAT подготовка","AP курсы","Тарифы","Вопросы"],
       location: "Наш адрес",
       locations: [
         { name: "Ташкент — Новза филиал",          url: "https://yandex.uz/maps/-/CPSf6Tmj" },
-        { name: "Ташкент — Юнусабад филиал",       url: "https://yandex.uz/maps/-/CPSfbZPb" },
-        { name: "Бухара филиал",                   url: "https://yandex.uz/maps/-/CPSfbSzm" },
+        { name: "Ташкент — Minor филиал",          url: "https://yandex.uz/maps/-/CTSDjC0I" },
+        { name: "Бухара филиал",                   url: "https://yandex.uz/maps/?pt=64.43023,39.76359&z=17&l=map" },
         { name: "Гулистан (Сырдарья) филиал",      url: "https://maps.app.goo.gl/F7xSBxxiSqXPbN5i9" },
         { name: "Навои филиал",                    url: "https://maps.app.goo.gl/F6LmXdmfCEARyRbg9" },
       ],
       locationPickerTitle: "В какой филиал поедете?",
       locationPickerFoot: "Если приедете — определим ваш уровень и подберём подходящую группу.",
       phone: "+998 55 511 16 00",
-      bot: "@satmakonn_bot",
+      bot: "@makonadminbot",
       botUrl: "https://t.me/makonadminbot",
     },
   },
@@ -2065,9 +2147,9 @@ const {
   useMemo
 } = React;
 function useLang() {
-  const [lang, setLang] = useState(() => localStorage.getItem('satmakon_lang') || 'uz');
+  const [lang, setLang] = useState(() => { try { return localStorage.getItem('satmakon_lang') || 'uz'; } catch (e) { return 'uz'; } });
   useEffect(() => {
-    localStorage.setItem('satmakon_lang', lang);
+    try { localStorage.setItem('satmakon_lang', lang); } catch (e) {}
   }, [lang]);
   return [lang, setLang];
 }
@@ -2151,7 +2233,7 @@ function Nav({
     onClick: () => openReg && openReg()
   }, t.nav.cta), /*#__PURE__*/React.createElement("a", {
     className: "nav-cta-mock",
-    href: "https://makonbook.uz/sat/guest/",
+    href: "https://makonbook.uz/check-level/",
     target: "_blank",
     rel: "noopener noreferrer"
   }, t.nav.mock)), /*#__PURE__*/React.createElement("button", {
@@ -2201,7 +2283,7 @@ function Nav({
     }
   }, t.nav.cta), /*#__PURE__*/React.createElement("a", {
     className: "nav-mobile-cta-mock",
-    href: "https://makonbook.uz/sat/guest/",
+    href: "https://makonbook.uz/check-level/",
     target: "_blank",
     rel: "noopener noreferrer",
     onClick: close
@@ -2244,7 +2326,7 @@ function Hero({
     }
   })), /*#__PURE__*/React.createElement("div", {
     className: "a more"
-  }, "25K+")), /*#__PURE__*/React.createElement("span", null, t.hero.social)), /*#__PURE__*/React.createElement("div", {
+  }, "8K+")), /*#__PURE__*/React.createElement("span", null, t.hero.social)), /*#__PURE__*/React.createElement("div", {
     className: "stats-row"
   }, t.hero.stats.map((s, i) => /*#__PURE__*/React.createElement("div", {
     key: i
@@ -2270,6 +2352,7 @@ function CountUpNum({
   const suffix = match ? match[3] : "";
   const target = numStr ? parseFloat(numStr.replace(/,/g, "")) : null;
   const hasComma = numStr.includes(",");
+  const decimals = numStr.includes(".") ? numStr.split(".")[1].length : 0;
   React.useEffect(() => {
     if (target == null) return;
     const el = ref.current;
@@ -2283,8 +2366,8 @@ function CountUpNum({
           const tick = now => {
             const p = Math.min(1, (now - start) / dur);
             const eased = 1 - Math.pow(1 - p, 3);
-            const cur = Math.round(target * eased);
-            const fmt = hasComma ? cur.toLocaleString("en-US") : String(cur);
+            const cur = decimals ? Number((target * eased).toFixed(decimals)) : Math.round(target * eased);
+            const fmt = hasComma ? cur.toLocaleString("en-US") : (decimals ? cur.toFixed(decimals) : String(cur));
             setShown(prefix + fmt + suffix);
             if (p < 1) requestAnimationFrame(tick);else setShown(value);
           };
@@ -2730,6 +2813,32 @@ function Students({
   const imgs2 = ['students/6-samira.jpg', 'students/7-shirinabonu.jpg', 'students/8-jaleel.jpg', 'students/9-ayanat.jpg', 'students/10-shohjahon.jpg', 'students/16-aisha-z.jpg', 'students/17-hung.jpg', 'students/18-aisha-y.jpg', 'students/19-damira.jpg', 'students/20-muhammadmirzo.jpg', 'students/21-kurmash.jpg'];
   const ref1 = useSwipeMarquee(false, 0.4);
   const ref2 = useSwipeMarquee(true, 0.36);
+  const ref0 = useSwipeMarquee(true, 0.38);
+  const latest = s.latest;
+  const renderLatest = () => {
+    if (!latest) return null;
+    const items = latest.items.map((it, i) => ({ ...it, rank: i + 1 }));
+    return /*#__PURE__*/React.createElement("div", {
+      className: "marquee-wrap"
+    }, /*#__PURE__*/React.createElement("div", {
+      ref: ref0,
+      className: "students-marquee rev"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "students-track"
+    }, [...items, ...items].map((it, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "result-card",
+      "aria-hidden": i >= items.length ? "true" : undefined
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "rc-rank"
+    }, "#", it.rank), /*#__PURE__*/React.createElement("div", {
+      className: "rc-score"
+    }, it.score), /*#__PURE__*/React.createElement("div", {
+      className: "rc-name"
+    }, it.name), /*#__PURE__*/React.createElement("div", {
+      className: "rc-badge"
+    }, "\u2B50 ", latest.badge))))));
+  };
   const renderRow = (imgs, reverse, ref) => /*#__PURE__*/React.createElement("div", {
     className: "marquee-wrap"
   }, /*#__PURE__*/React.createElement("div", {
@@ -2767,10 +2876,12 @@ function Students({
     style: {
       margin: '16px auto 0'
     }
-  }, s.sub))), /*#__PURE__*/React.createElement("div", {
+  }, s.sub), latest && /*#__PURE__*/React.createElement("div", {
+    className: "latest-pill"
+  }, "\uD83D\uDD25 ", latest.title))), /*#__PURE__*/React.createElement("div", {
     className: "students-rows",
     "aria-label": "Student results"
-  }, renderRow(imgs1, false, ref1), renderRow(imgs2, true, ref2)));
+  }, renderLatest(), renderRow(imgs1, false, ref1), renderRow(imgs2, true, ref2)));
 }
 function SocialProofBar({
   t
@@ -2886,8 +2997,9 @@ function Teachers({
   t
 }) {
   const x = t.teachers;
-  const imgs1 = ['teachers/1-yoqubjon.jpg', 'teachers/2-farrukh.jpg', 'teachers/3-jamoliddin.jpg', 'teachers/4-sat.jpg', 'teachers/5-davronov.jpg'];
-  const imgs2 = ['teachers/6-ustoz1.jpg', 'teachers/7-ustoz2.jpg', 'teachers/8-ustoz3.jpg', 'teachers/9-ustoz4.jpg', 'teachers/10-ustoz5.jpg', 'teachers/11-ustoz6.jpg', 'teachers/12-ustoz7.jpg', 'teachers/13-ustoz8.jpg'];
+  // Row 1: Head teachers, 1600 club, SAT English mentors · Row 2: Math 800 team + Academic Support (Math 800 / English 740)
+  const imgs1 = ['teachers/01-sunnatillo-abduhakimov.jpg', 'teachers/02-ahmad.jpg', 'teachers/03-javohir-rahimjanov.jpg', 'teachers/04-farrukh.jpg', 'teachers/05-jamoliddin.jpg', 'teachers/06-xurshid-sobirjonov.jpg', 'teachers/07-shahzoda-ozodova.jpg', 'teachers/08-sunnatjon-azizbekov.jpg', 'teachers/09-ziyoda-sagdiyeva.jpg'];
+  const imgs2 = ['teachers/10-xasan.jpg', 'teachers/11-alisher-mavlonov.jpg', 'teachers/12-atabek-nizamatdinov.jpg', 'teachers/13-dilnoza-ulugbekovna.jpg', 'teachers/14-sarvar-xolturayev.jpg', 'teachers/15-berdaq-jaksimuratov.jpg', 'teachers/16-maqsudbek-xolboyev.jpg', 'teachers/17-munisa-rustamova.jpg', 'teachers/18-bobur-faxriddinov.jpg', 'teachers/19-sabina-habibova.jpg'];
   const ref1 = useSwipeMarquee(true, 0.36);
   const ref2 = useSwipeMarquee(false, 0.4);
   const renderRow = (imgs, reverse, ref) => {
@@ -3007,7 +3119,7 @@ function PathSection({
 }
 function PricingSection({
   t,
-  openPicker
+  openReg
 }) {
   const p = t.pricing;
   const sectionRef = usePopInSection('pricing');
@@ -3071,7 +3183,7 @@ function PricingSection({
   }, tr.price, /*#__PURE__*/React.createElement("span", null, p.per))))), /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "p-cta",
-    onClick: () => openPicker && openPicker()
+    onClick: () => openReg && openReg()
   }, p.enroll)))), /*#__PURE__*/React.createElement("div", {
     className: "pricing-foot"
   }, p.foot)));
@@ -3301,7 +3413,7 @@ function Footer({
   }, l))), /*#__PURE__*/React.createElement("div", {
     className: "footer-social"
   }, /*#__PURE__*/React.createElement("a", {
-    href: "https://t.me/sat_makon_uz",
+    href: "https://t.me/sat_makon",
     title: "Telegram",
     target: "_blank",
     rel: "noopener noreferrer",
@@ -3515,7 +3627,7 @@ function App() {
     t: t
   }), /*#__PURE__*/React.createElement(PricingSection, {
     t: t,
-    openPicker: openPicker
+    openReg: openReg
   }), /*#__PURE__*/React.createElement(FinalCTA, {
     t: t,
     onCtaClick: openReg

@@ -65,7 +65,7 @@ LANG_EN = "en"
 BRANCHES = {
     "novza": "https://yandex.uz/maps/-/CPSf6Tmj",
     "minor": "https://yandex.uz/maps/-/CPSfbZPb",
-    "bukhara": "https://yandex.uz/maps/-/CPSfbSzm",
+    "bukhara": "https://yandex.uz/maps/?pt=64.43023,39.76359&z=17&l=map",
     "gulistan": "https://maps.app.goo.gl/F7xSBxxiSqXPbN5i9",
     "navoi": "https://maps.app.goo.gl/F6LmXdmfCEARyRbg9",
 }
